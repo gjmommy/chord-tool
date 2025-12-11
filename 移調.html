@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>轉調與和弦小工具</title>
+<style>
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        padding: 16px;
+    }
+    h1 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+    table {
+        border-collapse: collapse;
+        margin-top: 8px;
+        margin-bottom: 12px;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 4px 8px;
+        text-align: center;
+        min-width: 60px;
+        font-size: 13px;
+    }
+    thead th {
+        background: #e6e6f5;
+    }
+    .row-key1 td {
+        background: #ffe5e0;
+    }
+    .row-key2 td {
+        background: #e3f6df;
+    }
+    .note-cell {
+        cursor: pointer;
+    }
+    .note-cell:hover {
+        background: #fff3b0 !important;
+    }
+    .controls {
+        margin-bottom: 8px;
+    }
+    .controls label {
+        margin-right: 8px;
+    }
+    .interval {
+        margin-top: 4px;
+        font-weight: bold;
+        color: #0066aa;
+    }
+    .chord-container {
+        margin-top: 12px;
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .chord-table td {
+        text-align: left;
+        padding: 4px 8px;
+        min-width: 80px;
+    }
+    .chord-table th {
+        text-align: left;
+        background: #f0f0f0;
+    }
+    .explain {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+</style>
+</head>
+<body>
+
+<h1>轉調與和弦分析小工具</h1>
+
+<div class="controls">
+    <label>
+        調性 1：
+        <select id="key1"></select>
+    </label>
+    <label>
+        調性 2：
+        <select id="key2"></select>
+    </label>
+</div>
+
+<div class="interval">
+    音階差 1–2：<span id="intervalText">（請先選擇兩個調性）</span>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <!-- 1~12 位置編號 -->
+            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
+            <th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="row-key1">
+            <th>調性 1</th>
+            <!-- 這裡用 JS 動態填 -->
+            <td colspan="12">請選擇調性 1</td>
+        </tr>
+        <tr class="row-key2">
+            <th>調性 2</th>
+            <!-- 這裡用 JS 動態填 -->
+            <td colspan="12">請選擇調性 2</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="chord-container">
+    <table class="chord-table" border="1">
+        <tr><th colspan="2">和弦組成音</th></tr>
+        <tr><td>根音</td><td id="rootNote"></td></tr>
+        <tr><td>Maj</td><td id="majChord"></td></tr>
+        <tr><td>min</td><td id="minChord"></td></tr>
+        <tr><td>屬 7</td><td id="dom7Chord"></td></tr>
+        <tr><td>9</td><td id="dom9Chord"></td></tr>
+    </table>
+
+    <div class="explain">
+        <strong>和弦結構說明</strong><br>
+        Maj 和弦 = 根音 ＋ 大三度 ＋ 完全五度<br>
+        min 和弦 = 根音 ＋ 小三度 ＋ 完全五度<br>
+        屬 7 和弦 = 根音 ＋ 大三度 ＋ 完全五度 ＋ 小七度<br>
+        9 和弦 = 根音 ＋ 大三度 ＋ 完全五度 ＋ 小七度 ＋ 九度
+    </div>
+</div>
+
+<script>
+// ---- 資料：12 半音 ----
+const NOTES = [
+    "C","C#(Db)","D","D#(Eb)","E","F",
+    "F#(Gb)","G","G#(Ab)","A","A#(Bb)","B"
+];
+
+// ---- 初始化：填入兩個下拉選單 ----
+const key1Select = document.getElementById("key1");
+const key2Select = document.getElementById("key2");
+NOTES.forEach(n => {
+    const opt1 = document.createElement("option");
+    opt1.value = opt1.textContent = n;
+    key1Select.appendChild(opt1);
+
+    const opt2 = document.createElement("option");
+    opt2.value = opt2.textContent = n;
+    key2Select.appendChild(opt2);
+});
+
+// 預設 C & F，跟你常用的一樣
+key1Select.value = "C";
+key2Select.value = "F";
+
+// ---- DOM 參照 ----
+const rowKey1 = document.querySelector(".row-key1");
+const rowKey2 = document.querySelector(".row-key2");
+const intervalText = document.getElementById("intervalText");
+
+// 和弦顯示區
+const rootNoteSpan = document.getElementById("rootNote");
+const majChordSpan = document.getElementById("majChord");
+const minChordSpan = document.getElementById("minChord");
+const dom7ChordSpan = document.getElementById("dom7Chord");
+const dom9ChordSpan = document.getElementById("dom9Chord");
+
+// ---- 工具函式 ----
+function indexOfNote(note) {
+    return NOTES.indexOf(note);
+}
+
+// 建立從某個根音開始的 12 音序列
+function buildSequence(rootNote) {
+    const idx = indexOfNote(rootNote);
+    if (idx < 0) return [];
+    const seq = [];
+    for (let i = 0; i < 12; i++) {
+        seq.push({ text: NOTES[(idx + i) % 12], index: (idx + i) % 12 });
+    }
+    return seq;
+}
+
+// 計算 +m / -n 文字
+function formatInterval(key1, key2) {
+    const p1 = indexOfNote(key1);
+    const p2 = indexOfNote(key2);
+    if (p1 < 0 || p2 < 0) return "";
+    const diff = p2 - p1;
+    if (diff === 0) return "0 / 0";
+
+    let main = diff;
+    let alt;
+    if (diff > 0) {
+        alt = diff - 12; // 反向為負
+    } else {
+        alt = diff + 12; // 反向為正
+    }
+
+    const mainStr = (main >= 0 ? "+" + main : "" + main);
+    const altStr  = (alt  >= 0 ? "+" + alt  : "" + alt );
+    return `${mainStr} / ${altStr}`;
+}
+
+// 顯示某個 index 的和弦組成
+function showChordsFromIndex(idx) {
+    const root = NOTES[idx];
+    const maj  = [NOTES[idx], NOTES[(idx+4)%12], NOTES[(idx+7)%12]];
+    const min  = [NOTES[idx], NOTES[(idx+3)%12], NOTES[(idx+7)%12]];
+    const dom7 = [NOTES[idx], NOTES[(idx+4)%12], NOTES[(idx+7)%12], NOTES[(idx+10)%12]];
+    const dom9 = [NOTES[idx], NOTES[(idx+4)%12], NOTES[(idx+7)%12], NOTES[(idx+10)%12], NOTES[(idx+2)%12]];
+
+    rootNoteSpan.textContent  = root;
+    majChordSpan.textContent  = maj.join("  ");
+    minChordSpan.textContent  = min.join("  ");
+    dom7ChordSpan.textContent = dom7.join("  ");
+    dom9ChordSpan.textContent = dom9.join("  ");
+}
+
+// ---- 畫面更新 ----
+function render() {
+    const k1 = key1Select.value;
+    const k2 = key2Select.value;
+
+    const seq1 = buildSequence(k1);
+    const seq2 = buildSequence(k2);
+
+    // 更新音階差
+    intervalText.textContent = formatInterval(k1, k2);
+
+    // 清掉舊的 12 格
+    while (rowKey1.children.length > 1) rowKey1.removeChild(rowKey1.lastChild);
+    while (rowKey2.children.length > 1) rowKey2.removeChild(rowKey2.lastChild);
+
+    // 如果序列還沒準備好，就先跳出
+    if (seq1.length !== 12 || seq2.length !== 12) return;
+
+    // 填入兩列
+    seq1.forEach(obj => {
+        const td = document.createElement("td");
+        td.textContent = obj.text;
+        td.className = "note-cell";
+        td.dataset.idx = obj.index;
+        td.onclick = () => showChordsFromIndex(obj.index);
+        rowKey1.appendChild(td);
+    });
+
+    seq2.forEach(obj => {
+        const td = document.createElement("td");
+        td.textContent = obj.text;
+        td.className = "note-cell";
+        td.dataset.idx = obj.index;
+        td.onclick = () => showChordsFromIndex(obj.index);
+        rowKey2.appendChild(td);
+    });
+}
+
+// ---- 綁定事件 ----
+key1Select.addEventListener("change", render);
+key2Select.addEventListener("change", render);
+
+// 初次畫面
+render();
+</script>
+
+</body>
+</html>
