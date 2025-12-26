@@ -14,12 +14,15 @@
       table.dataframe tbody td { padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
       table.dataframe tbody tr:hover { background: #fafafa; }
       code { background: #f6f8fa; padding: 2px 4px; border-radius: 4px; }
+      table.dataframe tbody tr:active { background: #f0f9ff; }
+
     </style>
     
 </head>
 <body>
 <h1>Sax 指法表（原始版本）</h1>
 <div class="meta">Source file: <code>Sax指法.xlsx</code> · Sheet: <code>Sheet1</code></div>
+<p class="meta">Tip: click a row to see fingering details.</p>
 <table class="dataframe dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -278,5 +281,35 @@
     </tr>
   </tbody>
 </table>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const rows = document.querySelectorAll("table tbody tr");
+
+    rows.forEach(row => {
+      row.style.cursor = "pointer";
+
+      row.addEventListener("click", () => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length < 4) return;
+
+        const note  = cells[0].innerText.trim();
+        const left  = cells[1].innerText.trim();
+        const right = cells[2].innerText.trim();
+        const other = cells[3].innerText.trim();
+        const note2 = (cells[4] ? cells[4].innerText.trim() : "");
+
+        alert(
+          `🎵 ${note}\n\n` +
+          `Left hand:\n${left}\n\n` +
+          `Right hand:\n${right}\n\n` +
+          `Other / Thumb:\n${other}\n\n` +
+          (note2 ? `Note:\n${note2}` : "")
+        );
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
