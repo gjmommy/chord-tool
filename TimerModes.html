@@ -112,25 +112,25 @@
         <h2>📜 全部 50 種模式列表</h2>
         <p><span class="mode-code">F000</span>給觸發信號點動(按觸發吸合繼電器,鬆開斷開繼電器)</p>
         <p><span class="mode-code">F001</span>給觸發信號自鎖(觸發一次繼電器吸合,再觸發一次繼電器斷開)</p>
-        <p><span class="mode-code">F002</span>給觸發信號吸合時間,自動停止,吸合時間觸發無效</p>
+        <p><span class="mode-code">F002</span>給觸發信號吸合時間A,自動停止,吸合時間觸發無效</p>
         <p><span class="mode-code">F003</span>觸發，繼電器吸合(計時A)，再觸發重新計時A(迴圈一次)</p>
         <p><span class="mode-code">F004</span>給觸發信號,繼電器吸合時間自動停,在吸合期間,再觸發疊加計時//最大999</p>
         <p><span class="mode-code">F005</span> 觸發，繼電器吸合(計時A)，再觸發，放開</p>
-        <p><span class="mode-code">F006</span>觸發後,繼電器吸合A時間</p>
-        <p><span class="mode-code">F007</span>觸發後A時間,繼電器開始吸合,直到通電停止</p>
+        <p><span class="mode-code">F006</span>觸發後,繼電器吸合A時間(=F03)</p>
+        <p><span class="mode-code">F007</span>觸發後延遲A時間繼電器開始吸合,直到斷電</p>
         <p><span class="mode-code">F008</span>持繼觸發A時間後,繼電器保持吸合,放掉觸發繼電器斷開</p>
         <p><span class="mode-code">F009</span>觸發後A時間,繼電器保持吸合,再觸發後繼電器斷開,A時間後繼電器保持吸合</p>
         <p><span class="mode-code">F010</span>持續觸發A時間後,繼電器開始保持吸合,至放掉觸發B時間,繼電器才斷開</p>
         <p><span class="mode-code">F011</span>持續觸發A時間後,繼電器開始保持吸合,當再次保持續觸發吸合B時間,接著繼電器斷開</p>
         <p><span class="mode-code">F012</span>持續觸發,繼電器吸合A時間後停止,信號消失繼電器,再次吸合B時間後停止</p>
-        <p><span class="mode-code">F013</span>持續觸發,繼電器吸合A時間,u 一個迴圈</p>
+        <p><span class="mode-code">F013</span>觸發斷開A時間後,繼電器吸合</p>
         <p><span class="mode-code">F014</span>持續觸發執行迴圈,停止觸發終止:繼電器吸合A時間,再斷開B時間,一直迴圈,</p>
-        <p><span class="mode-code">F015</span>給一次觸發信號,A時間繼電器吸合,B時間繼電器斷開,一直迴圈,再給一次觸發信號,終止迴圈</p>
-        <p><span class="mode-code">F016</span>給觸發信號延時時間後,繼電器吸合,超過B時間斷開</p>
-        <p><span class="mode-code">F017</span>持續給觸發信號,延時A時間後,B時間繼電器吸合,信號消失,計時清零</p>
-        <p><span class="mode-code">F018</span>給觸發信號,A時間繼電器吸合,B時間繼電器斷開,觸發一次動作一次</p>
-        <p><span class="mode-code">F019</span>給觸發信號,繼電器吸合時間自動停,停止後再計算時間後,再次吸合A時間後停止</p>
-        <p><span class="mode-code">F020</span>給觸發信號不動作,信號消失觸發,啟動A時間後斷開</p>
+        <p><span class="mode-code">F015</span>觸發一次,繼電器吸合A時間,斷開B時間,一直迴圈,再觸發則終止迴圈</p>
+        <p><span class="mode-code">F016</span>觸發後延時A時間,繼電器吸合B時間再斷開</p>
+        <p><span class="mode-code">F017</span>持續觸發A時間後,繼電器吸合B時間</p>
+        <p><span class="mode-code">F018</span>觸發後,繼電器吸合A時間,再斷開,B時間後才能再觸發</p>
+        <p><span class="mode-code">F019</span>觸發後,繼電器吸合A時間斷開B時間後再次吸合A時間則停止</p>
+        <p><span class="mode-code">F020</span>觸發再失去觸發,繼電器吸合A時間後斷開</p>
         <p><span class="mode-code">F021</span>信號消失,延時A時間後,繼電器吸合,B時間後繼電器斷開,A+B時間內再給信號無效</p>
         <p><span class="mode-code">F022</span>信號消失,超過A時間後,繼電器吸合,B時間後繼電器斷開,A+B時間內再給信號就重新開始</p>
         <p><span class="mode-code">F023</span>通電不動作,給觸發信號後,繼電器吸合,啟動A時間,停止B時間,迴圈C次斷開,再給信號,再執行一次0為1,然後數字加1</p>
